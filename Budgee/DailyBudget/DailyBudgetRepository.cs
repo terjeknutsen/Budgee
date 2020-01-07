@@ -19,7 +19,7 @@ namespace Budgee.DailyBudget
         public async Task<bool> Exists(DailyBudgetId id)
         {
             var budgets = await database.GetDailyBudgetAsync();
-            return budgets.Any(b => b.Id == id);
+            return budgets.Any(b => b.Id == id); 
         }
 
         public async Task<Domain.DailyBudget.DailyBudget> Load(DailyBudgetId id)
