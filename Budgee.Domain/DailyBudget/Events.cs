@@ -13,6 +13,7 @@ namespace Budgee.Domain.DailyBudget
             public Guid DailyBudgetId { get; set; }
             public Guid IncomeId { get; set; }
             public decimal Amount { get; set; }
+            public decimal DailyAmount{ get; set; }
 
         }
         public class IncomeAmountChanged 

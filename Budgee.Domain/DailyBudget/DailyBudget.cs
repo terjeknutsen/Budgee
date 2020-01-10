@@ -21,8 +21,13 @@ namespace Budgee.Domain.DailyBudget
             {
                 DailyBudgetId = Id,
                 IncomeId = Guid.NewGuid(),
-                Amount = amount
+                Amount = amount,
+                //Remaining = CalculateRemaining(amount),
+                DailyAmount = CalculateAvailable(amount)
             });
+
+     
+
         public void ChangeIncome(Guid incomeId, decimal amount)
             => Apply(new Events.IncomeAmountChanged 
             {
@@ -90,6 +95,7 @@ namespace Budgee.Domain.DailyBudget
                     income = new Income(Apply);
                     ApplyToEntity(income, e);
                     Incomes.Add(income);
+                    DailyAmount = DailyAmount.FromDecimal(e.DailyAmount);
                     break;
                 case Events.IncomeRemoved e:
                     income = Incomes.FirstOrDefault(i => i.Id == e.IncomeId);
@@ -144,7 +150,12 @@ namespace Budgee.Domain.DailyBudget
         public Amount TotalOutgo => Amount.FromDecimal(Outgos.Sum(i => i.Amount));
         public List<Income> Incomes { get; }
         public List<Outgo> Outgos{ get; }
-        public DailyAmount DailyAmount { get; }
+        public DailyAmount DailyAmount { get; private set; }
         public Period Period { get; set; }
+        private decimal CalculateAvailable(decimal amount)
+        {
+            var totalIncome = TotalIncome + amount;
+            return totalIncome / Period.Days;
+        }
     }
 }

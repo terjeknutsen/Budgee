@@ -39,6 +39,24 @@ namespace Budgee.Tests.Domain
                 SUT.TotalIncome.Amount.ShouldEqual(100m);
             }
         }
+        public class When_add_income_given_period_is_set : SpecsFor<DailyBudget>
+        {
+            protected override void InitializeClassUnderTest()
+            => InitSUT(this, Guid.NewGuid());
+            protected override void Given()
+            {
+                Given<TenDayPeriodSet>();
+                base.Given();
+            }
+            protected override void When()
+            {
+                SUT.AddIncome(100m);
+            }
+            [Test]
+            public void Then_daily_amount_should_be_set(){
+                SUT.DailyAmount.Amount.ShouldEqual(10m);
+            }
+        }
         public class When_add_income_given_has_income : SpecsFor<DailyBudget>
         {
             protected override void InitializeClassUnderTest()
@@ -186,6 +204,15 @@ namespace Budgee.Tests.Domain
             public void Initialize(ISpecs<DailyBudget> state)
             {
                 state.SUT.AddOutgo(100m);
+            }
+        }
+        class TenDayPeriodSet : IContext<DailyBudget>
+        {
+            public void Initialize(ISpecs<DailyBudget> state)
+            {
+                var now = DateTime.Now;
+                var start = new DateTime(now.Year,now.Month,now.Day);
+                state.SUT.SetPeriod(start, start.AddDays(10));
             }
         }
     }

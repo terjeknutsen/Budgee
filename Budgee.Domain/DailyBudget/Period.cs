@@ -11,6 +11,7 @@ namespace Budgee.Domain.DailyBudget
         public DailyBudgetId ParentId{ get; private set; }
         public DateTime StartTime { get; set; }
         public DateTime EndTime { get; set; }
+        public int Days { get; set; }
 
         protected override void When(object @event)
         {
@@ -23,6 +24,7 @@ namespace Budgee.Domain.DailyBudget
                     Id = new PeriodId(e.PeriodId);
                     StartTime = e.Start;
                     EndTime = e.End;
+                    Days = (int)(EndTime - StartTime).TotalDays;
                     break;
                 case Events.PeriodStartChanged e:
                     if (e.Start > EndTime)
