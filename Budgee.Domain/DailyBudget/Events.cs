@@ -27,6 +27,12 @@ namespace Budgee.Domain.DailyBudget
             public Guid DailyBudgetId{ get; set; }
             public Guid IncomeId { get; set; }
         }
+        public class TotalIncomeChanged
+        {
+            public Guid DailyBudgetId{ get; set; }
+            public decimal TotalIncome { get; set; }
+        }
+
 
         public class OutgoAddedToDailyBudget
         {
@@ -47,6 +53,11 @@ namespace Budgee.Domain.DailyBudget
             public Guid DailyBudgetId { get; set; }
             public Guid OutgoId { get; set; }
         }
+        public class TotalOutgoChanged
+        {
+            public Guid DailyBudgetId { get; set; }
+            public decimal TotalOutgo { get; set; }
+        } 
 
         public class DailyAmountChanged
         {

@@ -3,7 +3,7 @@ using System;
 
 namespace Budgee.Domain.DailyBudget
 {
-    public sealed class Outgo : Entity<OutgoId>
+    public class Outgo : Entity<OutgoId>
     {
         public Outgo(Action<object> applier) : base(applier)
         {}

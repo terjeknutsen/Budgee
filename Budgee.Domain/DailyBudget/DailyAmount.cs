@@ -6,10 +6,10 @@ namespace Budgee.Domain.DailyBudget
     public sealed class DailyAmount : Money
     {
         private DailyAmount(decimal amount) : base(amount)
-        {
-            if (amount < 0)
-                throw new ArgumentOutOfRangeException("Amount cannot be negative");
-        }
+        {}
         public new static DailyAmount FromDecimal(decimal amount) => new DailyAmount(amount);
+        public static implicit operator decimal(DailyAmount self) => self.Amount;
+        public static bool operator <(DailyAmount a, DailyAmount b) => a.Amount < b.Amount;
+        public static bool operator >(DailyAmount a, DailyAmount b) => a.Amount > b.Amount;
     }
 }

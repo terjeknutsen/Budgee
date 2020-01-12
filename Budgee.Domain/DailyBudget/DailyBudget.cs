@@ -17,50 +17,65 @@ namespace Budgee.Domain.DailyBudget
             Apply(new Events.DailyBudgetCreated { Id = id });
         }
         public void AddIncome(decimal amount)
-            => Apply(new Events.IncomeAddedToDailyBudget 
-            {
-                DailyBudgetId = Id,
-                IncomeId = Guid.NewGuid(),
-                Amount = amount,
-                //Remaining = CalculateRemaining(amount),
-                DailyAmount = CalculateAvailable(amount)
-            });
+        { 
+            Apply(new Events.IncomeAddedToDailyBudget
+                {
+                    DailyBudgetId = Id,
+                    IncomeId = Guid.NewGuid(),
+                    Amount = amount,
+                });
+            Snapshot.Update(TotalIncome());
+        }
 
-     
 
         public void ChangeIncome(Guid incomeId, decimal amount)
-            => Apply(new Events.IncomeAmountChanged 
+        {
+            Apply(new Events.IncomeAmountChanged
             {
                 DailyBudgetId = Id,
                 IncomeId = incomeId,
                 Amount = amount
             });
+            Snapshot.Update(TotalIncome());
+        }
         public void RemoveIncome(Guid incomeId)
-            => Apply(new Events.IncomeRemoved
+        {
+            Apply(new Events.IncomeRemoved
             {
                 DailyBudgetId = Id,
                 IncomeId = incomeId
             });
+            Snapshot.Update(TotalIncome());
+        }
         public void AddOutgo(decimal amount)
-            => Apply(new Events.OutgoAddedToDailyBudget
+        {
+            Apply(new Events.OutgoAddedToDailyBudget
             {
                 DailyBudgetId = Id,
                 OutgoId = Guid.NewGuid(),
                 Amount = amount,
             });
+            Snapshot.UpdateOutgo(TotalOutgo());
+        }
         public void ChangeOutgo(Guid id, decimal amount)
-                => Apply(new Events.OutgoAmountChanged
-                {
-                    DailyBudgetId = Id,
-                    OutgoId = id,
-                    Amount = amount
-                });
+        {
+            Apply(new Events.OutgoAmountChanged
+            {
+                DailyBudgetId = Id,
+                OutgoId = id,
+                Amount = amount
+            });
+            Snapshot.UpdateOutgo(TotalOutgo());
+        }
         public void RemoveOutgo(Guid outgoId)
-            => Apply(new Events.OutgoRemoved
+        {
+            Apply(new Events.OutgoRemoved
             {
                 DailyBudgetId = Id,
                 OutgoId = outgoId
             });
+            Snapshot.UpdateOutgo(TotalOutgo());
+        }
         public void SetPeriod(DateTime start, DateTime end)
             => Apply(new Events.PeriodAddedToDailyBudget
             {
@@ -84,30 +99,34 @@ namespace Budgee.Domain.DailyBudget
         {
             Income income;
             Outgo outgo;
-            Period period;
+            Snapshot snapshot;
 
             switch(@event)
             {
                 case Events.DailyBudgetCreated e:
                     Id = new DailyBudgetId(e.Id);
+                    snapshot = new Snapshot(Apply);
+                    ApplyToEntity(snapshot, e);
+                    Snapshot = snapshot;
                     break;
                 case Events.IncomeAddedToDailyBudget e:
                     income = new Income(Apply);
                     ApplyToEntity(income, e);
                     Incomes.Add(income);
-                    DailyAmount = DailyAmount.FromDecimal(e.DailyAmount);
                     break;
                 case Events.IncomeRemoved e:
                     income = Incomes.FirstOrDefault(i => i.Id == e.IncomeId);
                     if (income == null)
                         throw new InvalidOperationException($"Income with id {e.IncomeId} not found");
                     Incomes.Remove(income);
+                 
                     break;
                 case Events.IncomeAmountChanged e:
                     income = Incomes.FirstOrDefault(i => i.Id == e.IncomeId);
                     if (income == null)
                         throw new InvalidOperationException($"Income with id {e.IncomeId} not found");
                     ApplyToEntity(income, e);
+                    Snapshot.Update(TotalIncome());
                     break;
                 case Events.OutgoAddedToDailyBudget e:
                     outgo = new Outgo(Apply);
@@ -127,35 +146,35 @@ namespace Budgee.Domain.DailyBudget
                     ApplyToEntity(outgo, e);
                     break;
                 case Events.PeriodAddedToDailyBudget e:
-                    period = new Period(Apply);
-                    ApplyToEntity(period,e);
-                    Period = period;
+                    if (Period != null)
+                        throw new InvalidOperationException($"Period has already been set. Update start or end");
+                    Period = Period.Create(e.Start, e.End);
+                    ApplyToEntity(Snapshot, e);
                     break;
                 case Events.PeriodStartChanged e:
-                    if (Period == null)
-                        throw new InvalidOperationException("Period is not set");
-                    ApplyToEntity(Period, e);
+                    Period = Period.Create(e.Start, Period.ToB);
+                    ApplyToEntity(Snapshot, e);
                     break;
                 case Events.PeriodEndChanged e:
-                    if (Period == null)
-                        throw new InvalidOperationException("Period is not set");
-                    ApplyToEntity(Period, e);
+                    Period = Period.Create(Period.FromA, e.End);
+                    ApplyToEntity(Snapshot, e);
+                    break;
+                case Events.TotalIncomeChanged e:
+                    ApplyToEntity(Snapshot,e);
+                    break;
+                case Events.TotalOutgoChanged e:
+                    ApplyToEntity(Snapshot, e);
                     break;
             }   
         }
         protected override void EnsureValidState()
         {}
 
-        public Amount TotalIncome => Amount.FromDecimal(Incomes.Sum(i => i.Amount));
-        public Amount TotalOutgo => Amount.FromDecimal(Outgos.Sum(i => i.Amount));
+        private Amount TotalIncome() => Amount.FromDecimal(Incomes.Sum(i => i.Amount));
+        private Amount TotalOutgo() => Amount.FromDecimal(Outgos.Sum(i => i.Amount));
         public List<Income> Incomes { get; }
         public List<Outgo> Outgos{ get; }
-        public DailyAmount DailyAmount { get; private set; }
         public Period Period { get; set; }
-        private decimal CalculateAvailable(decimal amount)
-        {
-            var totalIncome = TotalIncome + amount;
-            return totalIncome / Period.Days;
-        }
+        public Snapshot Snapshot{ get; set; }
     }
 }

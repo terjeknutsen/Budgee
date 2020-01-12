@@ -7,13 +7,18 @@ using DailyBudget = Budgee.Domain.DailyBudget.DailyBudget;
 using System;
 using SpecsFor.Core;
 using System.Linq;
+using Budgee.Domain.DailyBudget;
 
 namespace Budgee.Tests.Domain
 {
     class DailyBudgetSpecs
     {
-        static void InitSUT(SpecsFor<DailyBudget> state, Guid budgetId)
-            => state.SUT = new DailyBudget(new Budgee.Domain.DailyBudget.DailyBudgetId(budgetId));
+        static void InitSUT(SpecsFor<DailyBudget> state, Guid budgetId, params IContext<DailyBudget>[] contexts)
+        {
+             state.SUT = new DailyBudget(new DailyBudgetId(budgetId));
+            foreach (var context in contexts)
+                context.Initialize(state);
+        }
         public class When_create_daily_budget : SpecsFor<DailyBudget>
         {
             private Guid id = Guid.NewGuid();
@@ -22,7 +27,19 @@ namespace Budgee.Tests.Domain
             [Test]
             public void Then_budget_id_should_be_set()
             {
-                SUT.Id.ShouldEqual(new Budgee.Domain.DailyBudget.DailyBudgetId(id));
+                SUT.Id.ShouldEqual(new DailyBudgetId(id));
+            }
+            [Test]
+            public void Then_snapshot_should_be_set(){
+                SUT.Snapshot.ShouldNotBeNull();
+            }
+            [Test]
+            public void Then_daily_amount_should_equal_zero(){
+                SUT.Snapshot.Daily.ShouldEqual(DailyAmount.FromDecimal(0m));
+            }
+            [Test]
+            public void Then_available_amount_should_equal_zero(){
+                SUT.Snapshot.Available.ShouldEqual(Available.FromDecimal(0m));
             }
         }
         public class When_add_income : SpecsFor<DailyBudget>
@@ -34,68 +51,62 @@ namespace Budgee.Tests.Domain
                 SUT.AddIncome(100m);
             }
             [Test]
-            public  void Then_total_income_should_be_set()
-            {
-                SUT.TotalIncome.Amount.ShouldEqual(100m);
+            public void Then_income_should_be_added(){
+                SUT.Incomes.ShouldNotBeEmpty();
             }
         }
         public class When_add_income_given_period_is_set : SpecsFor<DailyBudget>
         {
             protected override void InitializeClassUnderTest()
-            => InitSUT(this, Guid.NewGuid());
-            protected override void Given()
-            {
-                Given<TenDayPeriodSet>();
-                base.Given();
-            }
+            => InitSUT(this, Guid.NewGuid(),new TenDayPeriodSet());
+            
             protected override void When()
             {
                 SUT.AddIncome(100m);
             }
             [Test]
             public void Then_daily_amount_should_be_set(){
-                SUT.DailyAmount.Amount.ShouldEqual(10m);
+                SUT.Snapshot.Daily.ShouldBeGreaterThan(DailyAmount.FromDecimal(0m));
+            }
+            [Test]
+            public void Then_available_amount_should_be_set(){
+                SUT.Snapshot.Available.ShouldBeGreaterThan(Available.FromDecimal(0m));
             }
         }
         public class When_add_income_given_has_income : SpecsFor<DailyBudget>
         {
             protected override void InitializeClassUnderTest()
-                => InitSUT(this, Guid.NewGuid());
-            protected override void Given()
-            {
-                Given<HasIncome>();
-                base.Given();
-            }
+                => InitSUT(this, Guid.NewGuid(),new TenDayPeriodSet(),new HasIncome());
+            
             protected override void When()
             {
                 SUT.AddIncome(100m);
             }
             [Test]
-            public void Then_income_should_be_summed()
-            {
-                SUT.TotalIncome.Amount.ShouldEqual(200m);
+            public void Then_income_should_be_added(){
+                SUT.Incomes.Count.ShouldBeGreaterThan(1);
             }
         }
 
         public class when_remove_income_given_has_income : SpecsFor<DailyBudget>
         {
             protected override void InitializeClassUnderTest()
-                => InitSUT(this, Guid.NewGuid());
-            protected override void Given()
-            {
-                Given<HasIncome>();
-                base.Given();
-            }
+                => InitSUT(this, Guid.NewGuid(),new TenDayPeriodSet(),new HasIncome());
+        
             protected override void When()
             {
                 var income = SUT.Incomes.First();
                 SUT.RemoveIncome(income.Id);
             }
             [Test]
-            public void Then_total_income_should_be_zero()
-            {
-                SUT.TotalIncome.Amount.ShouldEqual(0m);
+            public void Then_income_should_be_removed(){
+                SUT.Incomes.ShouldBeEmpty();
             }
+            [Test]
+            public void Then_snapshot_should_be_updated(){
+                SUT.Snapshot.Daily.ShouldEqual(DailyAmount.FromDecimal(0m));
+            }
+
         }
 
         public class When_add_outgo : SpecsFor<DailyBudget>
@@ -109,10 +120,6 @@ namespace Budgee.Tests.Domain
             [Test]
             public void Then_outgo_should_be_added(){
                 SUT.Outgos.ShouldNotBeEmpty();
-            }
-            [Test]
-            public void Then_total_outgo_should_be_increased(){
-                SUT.TotalOutgo.Amount.ShouldEqual(100m);
             }
         }
 
@@ -133,13 +140,8 @@ namespace Budgee.Tests.Domain
         public class When_remove_outgo_given_exists : SpecsFor<DailyBudget>
         {
             protected override void InitializeClassUnderTest()
-                => InitSUT(this, Guid.NewGuid());
+                => InitSUT(this, Guid.NewGuid(),new TenDayPeriodSet(),new HasIncome(),new HasOutgo());
 
-            protected override void Given()
-            {
-                Given<HasOutgo>();
-                base.Given();
-            }
             protected override void When()
             {
                 var outgo = SUT.Outgos.First();
@@ -150,36 +152,37 @@ namespace Budgee.Tests.Domain
             {
                 SUT.Outgos.ShouldBeEmpty();
             }
+            [Test]
+            public void Then_snapshot_should_be_updated(){
+                SUT.Snapshot.Daily.ShouldEqual(DailyAmount.FromDecimal(10m));
+            }
         }
         
         public class When_change_income_given_has_income : SpecsFor<DailyBudget>
         {
             protected override void InitializeClassUnderTest()
-                => InitSUT(this, Guid.NewGuid());
-            protected override void Given()
-            {
-                Given<HasIncome>();
-                base.Given();
-            }
+                => InitSUT(this, Guid.NewGuid(),new TenDayPeriodSet(),new HasIncome());
+            
             protected override void When()
             {
                 var income = SUT.Incomes.First();
                 SUT.ChangeIncome(income.Id, 50m);
             }
             [Test]
-            public void Then_total_income_should_be_changes(){
-                SUT.TotalIncome.Amount.ShouldEqual(50m);
+            public void Then_income_should_be_changed()
+            {
+                SUT.Incomes.First().Amount.ShouldEqual(Amount.FromDecimal(50m));
+            }
+            [Test]
+            public void Then_snapshot_should_be_updated(){
+                SUT.Snapshot.Daily.ShouldBeLessThan(DailyAmount.FromDecimal(10m));
             }
         }
         public class When_change_outgo_given_has_outgo : SpecsFor<DailyBudget>
         {
             protected override void InitializeClassUnderTest()
-                => InitSUT(this, Guid.NewGuid());
-            protected override void Given()
-            {
-                Given<HasOutgo>();
-                base.Given();
-            }
+                => InitSUT(this, Guid.NewGuid(),new TenDayPeriodSet(),new HasIncome(),new HasOutgo());
+            
             protected override void When()
             {
                 var outgo = SUT.Outgos.First();
@@ -187,7 +190,42 @@ namespace Budgee.Tests.Domain
             }
             [Test]
             public void Then_outgo_should_change(){
-                SUT.TotalOutgo.Amount.ShouldEqual(50m);
+                SUT.Outgos.First().Amount.ShouldEqual(Amount.FromDecimal(50m));
+            }
+            [Test]
+            public void Then_snapshot_should_be_updated()
+            {
+                var expected = (100 - 50) / 10;
+                SUT.Snapshot.Daily.ShouldEqual(DailyAmount.FromDecimal(expected));
+            }
+        }
+
+        public class When_change_period_start_given_has_snapshot : SpecsFor<DailyBudget>
+        {
+            protected override void InitializeClassUnderTest()
+            => InitSUT(this, Guid.NewGuid(), new HasIncome(), new TenDayPeriodSet(), new HasOutgo());
+            protected override void When()
+            {
+                SUT.ChangeStart(Currentstart().AddDays(1));
+            }
+            [Test]
+            public void Then_snapshot_should_be_changed(){
+                SUT.Snapshot.Daily.ShouldEqual(DailyAmount.FromDecimal(3.33m));
+            }
+        }
+
+        public class When_change_period_end_given_has_snapshot : SpecsFor<DailyBudget>
+        {
+            protected override void InitializeClassUnderTest()
+            => InitSUT(this, Guid.NewGuid(), new HasIncome(), new TenDayPeriodSet(), new HasOutgo());
+            protected override void When()
+            {
+                SUT.ChangeEnd(Currentstart().AddDays(9));
+            }
+            [Test]
+            public void Then_snapshot_should_be_changed()
+            {
+                SUT.Snapshot.Daily.ShouldEqual(DailyAmount.FromDecimal(3.33m));
             }
         }
 
@@ -203,16 +241,15 @@ namespace Budgee.Tests.Domain
         {
             public void Initialize(ISpecs<DailyBudget> state)
             {
-                state.SUT.AddOutgo(100m);
+                state.SUT.AddOutgo(70m);
             }
         }
+        static DateTime Currentstart() => new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day);
         class TenDayPeriodSet : IContext<DailyBudget>
         {
             public void Initialize(ISpecs<DailyBudget> state)
             {
-                var now = DateTime.Now;
-                var start = new DateTime(now.Year,now.Month,now.Day);
-                state.SUT.SetPeriod(start, start.AddDays(10));
+                state.SUT.SetPeriod(Currentstart(), Currentstart().AddDays(10));
             }
         }
     }
