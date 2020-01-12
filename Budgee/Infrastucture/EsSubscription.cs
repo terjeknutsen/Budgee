@@ -1,4 +1,4 @@
-﻿using Budgee.Domain.DailyBudget;
+﻿using Budgee.Domain.DailyBudgets;
 using Budgee.Projections;
 using EventStore.ClientAPI;
 using System;

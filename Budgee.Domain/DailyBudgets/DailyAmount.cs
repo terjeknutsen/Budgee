@@ -1,7 +1,7 @@
 ﻿using Budgee.Domain.Shared;
 using System;
 
-namespace Budgee.Domain.DailyBudget
+namespace Budgee.Domain.DailyBudgets
 {
     public sealed class DailyAmount : Money
     {

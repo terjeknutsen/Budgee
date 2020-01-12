@@ -3,11 +3,10 @@ using NUnit.Framework;
 using Should;
 using Moq;
 using SpecsFor.StructureMap;
-using DailyBudget = Budgee.Domain.DailyBudget.DailyBudget;
 using System;
 using SpecsFor.Core;
 using System.Linq;
-using Budgee.Domain.DailyBudget;
+using Budgee.Domain.DailyBudgets;
 
 namespace Budgee.Tests.Domain
 {
@@ -48,7 +47,7 @@ namespace Budgee.Tests.Domain
                 => InitSUT(this, Guid.NewGuid());
             protected override void When()
             {
-                SUT.AddIncome(100m);
+                SUT.AddIncome(100m, NOW);
             }
             [Test]
             public void Then_income_should_be_added(){
@@ -62,7 +61,7 @@ namespace Budgee.Tests.Domain
             
             protected override void When()
             {
-                SUT.AddIncome(100m);
+                SUT.AddIncome(100m, NOW);
             }
             [Test]
             public void Then_daily_amount_should_be_set(){
@@ -80,11 +79,19 @@ namespace Budgee.Tests.Domain
             
             protected override void When()
             {
-                SUT.AddIncome(100m);
+                SUT.AddIncome(100m, NOW);
             }
             [Test]
             public void Then_income_should_be_added(){
                 SUT.Incomes.Count.ShouldBeGreaterThan(1);
+            }
+            [Test]
+            public void Then_daily_amount_should_be_doubled(){
+                SUT.Snapshot.Daily.ShouldEqual(DailyAmount.FromDecimal(20m));
+            }
+            [Test]
+            public void Then_available_amount_should_be_correct(){
+                SUT.Snapshot.Available.ShouldEqual(Available.FromDecimal(20m));
             }
         }
 
@@ -96,7 +103,7 @@ namespace Budgee.Tests.Domain
             protected override void When()
             {
                 var income = SUT.Incomes.First();
-                SUT.RemoveIncome(income.Id);
+                SUT.RemoveIncome(income.Id, NOW);
             }
             [Test]
             public void Then_income_should_be_removed(){
@@ -115,7 +122,7 @@ namespace Budgee.Tests.Domain
                 => InitSUT(this, Guid.NewGuid());
             protected override void When()
             {
-                SUT.AddOutgo(100m);
+                SUT.AddOutgo(100m, NOW);
             }
             [Test]
             public void Then_outgo_should_be_added(){
@@ -127,14 +134,11 @@ namespace Budgee.Tests.Domain
         {
             protected override void InitializeClassUnderTest()
                 => InitSUT(this, Guid.NewGuid());
-            protected override void When()
-            {
-                
-            }
+         
             [Test]
             public void Then_invalid_operation_exception_should_be_thrown(){
 
-                Assert.Throws<InvalidOperationException>(() => SUT.RemoveOutgo(outgoId: Guid.NewGuid()));
+                Assert.Throws<InvalidOperationException>(() => SUT.RemoveOutgo(outgoId: Guid.NewGuid(), NOW));
             }
         }
         public class When_remove_outgo_given_exists : SpecsFor<DailyBudget>
@@ -145,7 +149,7 @@ namespace Budgee.Tests.Domain
             protected override void When()
             {
                 var outgo = SUT.Outgos.First();
-                SUT.RemoveOutgo(outgo.Id);
+                SUT.RemoveOutgo(outgo.Id, NOW);
             }
             [Test]
             public void Then_outgo_should_be_removed()
@@ -166,7 +170,7 @@ namespace Budgee.Tests.Domain
             protected override void When()
             {
                 var income = SUT.Incomes.First();
-                SUT.ChangeIncome(income.Id, 50m);
+                SUT.ChangeIncome(income.Id, 50m, NOW);
             }
             [Test]
             public void Then_income_should_be_changed()
@@ -186,7 +190,7 @@ namespace Budgee.Tests.Domain
             protected override void When()
             {
                 var outgo = SUT.Outgos.First();
-                SUT.ChangeOutgo(outgo.Id, 50m);
+                SUT.ChangeOutgo(outgo.Id, 50m,NOW);
             }
             [Test]
             public void Then_outgo_should_change(){
@@ -229,11 +233,26 @@ namespace Budgee.Tests.Domain
             }
         }
 
+        public class When_add_expenditure_less_than_available : SpecsFor<DailyBudget>
+        {
+            protected override void InitializeClassUnderTest()
+                => InitSUT(this, Guid.NewGuid(), new HasIncome(), new TenDayPeriodSet(), new HasOutgo());
+            protected override void When()
+            {
+                SUT.AddExpenditure(12m, NOW.AddDays(5));
+            }
+            [Test]
+            public void Then_available_should_be_correct(){
+                var expected = (3m * 6) - 12m;
+                SUT.Snapshot.Available.ShouldEqual(Available.FromDecimal(expected));
+            }
+        }
+
         class HasIncome : IContext<DailyBudget>
         {
             public void Initialize(ISpecs<DailyBudget> state)
             {
-                state.SUT.AddIncome(100m);
+                state.SUT.AddIncome(100m,NOW);
             }
         }
 
@@ -241,10 +260,11 @@ namespace Budgee.Tests.Domain
         {
             public void Initialize(ISpecs<DailyBudget> state)
             {
-                state.SUT.AddOutgo(70m);
+                state.SUT.AddOutgo(70m,NOW);
             }
         }
-        static DateTime Currentstart() => new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day);
+        static DateTime NOW = new DateTime(2020,1,1,12,0,0);
+        static DateTime Currentstart() => new DateTime(2020,1,1);
         class TenDayPeriodSet : IContext<DailyBudget>
         {
             public void Initialize(ISpecs<DailyBudget> state)

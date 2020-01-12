@@ -1,4 +1,4 @@
-﻿using Budgee.Domain.DailyBudget;
+﻿using Budgee.Domain.DailyBudgets;
 using Budgee.Framework;
 using System;
 using System.Threading.Tasks;
@@ -22,11 +22,11 @@ namespace Budgee.DailyBudget
                 V1.AddIncome cmd =>
                     HandleUpdate(
                        cmd.DailyBudgetId,
-                       b => b.AddIncome(cmd.Amount)),
+                       b => b.AddIncome(cmd.Amount,DateTime.Now)),
                 V1.AddOutgo cmd => 
                     HandleUpdate(
                         cmd.DailyBudgetId,
-                        b => b.AddOutgo(cmd.Amount)),
+                        b => b.AddOutgo(cmd.Amount, DateTime.Now)),
                 V1.SetPeriod cmd =>
                     HandleUpdate(
                         cmd.DailyBudgetId,
@@ -34,11 +34,11 @@ namespace Budgee.DailyBudget
                 V1.ChangeIncome cmd => 
                     HandleUpdate(
                         cmd.DailyBudgetId,
-                        b => b.ChangeIncome(cmd.IncomeId,cmd.Amount)),
+                        b => b.ChangeIncome(cmd.IncomeId,cmd.Amount, DateTime.Now)),
                 V1.ChangeOutgo cmd => 
                     HandleUpdate(
                         cmd.DailyBudgetId,
-                        b => b.ChangeOutgo(cmd.OutgoId,cmd.Amount)),
+                        b => b.ChangeOutgo(cmd.OutgoId,cmd.Amount, DateTime.Now)),
                 V1.ChangeStart cmd => 
                     HandleUpdate(
                         cmd.DailyBudgetId,
@@ -50,11 +50,11 @@ namespace Budgee.DailyBudget
                 V1.RemoveIncome cmd => 
                     HandleUpdate(
                         cmd.DailyBudgetId,
-                        b => b.RemoveIncome(cmd.IncomeId)),
+                        b => b.RemoveIncome(cmd.IncomeId, DateTime.Now)),
                 V1.RemoveOuto cmd => 
                     HandleUpdate(
                         cmd.DailyBudgetId,
-                        b => b.RemoveOutgo(cmd.OutgoId)),
+                        b => b.RemoveOutgo(cmd.OutgoId, DateTime.Now)),
                 _ => Task.CompletedTask
 
             };
@@ -67,13 +67,13 @@ namespace Budgee.DailyBudget
                 );
 
             var dailyBudget =
-                new Domain.DailyBudget.DailyBudget(
+                new Domain.DailyBudgets.DailyBudget(
                     new DailyBudgetId(cmd.DailyBudgetId));
             await repository.Add(dailyBudget);
 
         }
 
-        private async Task HandleUpdate(Guid dailyBudgetId, Action<Domain.DailyBudget.DailyBudget> operation){
+        private async Task HandleUpdate(Guid dailyBudgetId, Action<Domain.DailyBudgets.DailyBudget> operation){
             var dailyBudget = await repository.Load(dailyBudgetId.ToString());
             if (dailyBudget == null)
                 throw new InvalidOperationException(

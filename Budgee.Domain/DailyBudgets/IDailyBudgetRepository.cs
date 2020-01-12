@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 
-namespace Budgee.Domain.DailyBudget
+namespace Budgee.Domain.DailyBudgets
 {
     public interface IDailyBudgetRepository
     {

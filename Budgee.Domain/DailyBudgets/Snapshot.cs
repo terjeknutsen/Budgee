@@ -1,7 +1,7 @@
 ﻿using Budgee.Framework;
 using System;
 
-namespace Budgee.Domain.DailyBudget
+namespace Budgee.Domain.DailyBudgets
 {
     public sealed class Snapshot : Entity<SnapshotId>
     {
@@ -20,18 +20,27 @@ namespace Budgee.Domain.DailyBudget
 
         public DailyAmount Daily { get; private set; }
 
-        internal void Update(Amount income)
+        internal void Update(Amount income,DateTime entryDate)
             => Apply(new Events.TotalIncomeChanged
             {
                 DailyBudgetId = ParentId,
-                TotalIncome = income
+                TotalIncome = income,
+                EntryDate = entryDate
             });
-        internal void UpdateOutgo(Amount outgo)
+        internal void UpdateOutgo(Amount outgo,DateTime entryDate)
             => Apply(new Events.TotalOutgoChanged
                {
                 DailyBudgetId = ParentId,
-                TotalOutgo = outgo
+                TotalOutgo = outgo,
+                EntryDate = entryDate
                });
+        internal void UpdateTotalExpenditure(Amount expenditures, DateTime entryDate)
+            => Apply(new Events.TotalExpenditureChanged
+            {
+                DailyBudgetId = ParentId,
+                TotalExpenditure = expenditures,
+                EntryDate = entryDate
+            });
 
         protected override void When(object @event)
         {
@@ -50,11 +59,12 @@ namespace Budgee.Domain.DailyBudget
                 case Events.TotalIncomeChanged e:
                     totalIncome = Amount.FromDecimal(e.TotalIncome);
                     Daily = CalculateDaily(period,totalIncome,totalOutgo);
-                    Available = CalculateAvailable();
+                    Available = CalculateAvailable(period,e.EntryDate,Daily,totalExpenditure);
                     break;
                 case Events.TotalOutgoChanged e:
                     totalOutgo = Amount.FromDecimal(e.TotalOutgo);
                     Daily = CalculateDaily(period, totalIncome, totalOutgo);
+                    Available = CalculateAvailable(period, e.EntryDate, Daily, totalExpenditure);
                     break;
                 case Events.PeriodStartChanged e:
                     period = Period.Create(e.Start, period.ToB);
@@ -64,6 +74,11 @@ namespace Budgee.Domain.DailyBudget
                     period = Period.Create(period.FromA, e.End);
                     Daily = CalculateDaily(period, totalIncome, totalOutgo);
                     break;
+                case Events.TotalExpenditureChanged e:
+                    totalExpenditure = Amount.FromDecimal(e.TotalExpenditure);
+                    Available = CalculateAvailable(period, e.EntryDate, Daily, totalExpenditure);
+                    break;
+                
             }
         }
 
@@ -76,13 +91,13 @@ namespace Budgee.Domain.DailyBudget
             
             return DailyAmount.FromDecimal(daily);
         }
-        private Available CalculateAvailable()
+        private static Available CalculateAvailable(Period period,DateTime timeOfChange,DailyAmount dailyAmount, Amount totalExpenditure)
         {
-            totalExpenditure = Amount.FromDecimal(0m);
-            var days = period.Days;
-            var dailyAmount = Daily.Amount;
-            var totalExpenditure = totalExpenditure;
-            
+            if (period == null) return Available.FromDecimal(0m);
+            var expenditures = totalExpenditure?.Amount ?? 0m;
+            var elapsedDays = period.ElapsedDays(timeOfChange);
+            var available = (elapsedDays * dailyAmount) - expenditures;
+            return Available.FromDecimal(available);
         }
 
 

@@ -1,7 +1,7 @@
 ﻿using Budgee.Framework;
 using System;
 
-namespace Budgee.Domain.DailyBudget
+namespace Budgee.Domain.DailyBudgets
 {
     public sealed class Income : Entity<IncomeId>
     {

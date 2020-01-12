@@ -1,14 +1,14 @@
 ﻿using Budgee.Framework;
 using System;
 
-namespace Budgee.Domain.DailyBudget
+namespace Budgee.Domain.DailyBudgets
 {
     public class Outgo : Entity<OutgoId>
     {
         public Outgo(Action<object> applier) : base(applier)
         {}
-        public DailyBudgetId ParentId { get; private set; }
-        public Amount Amount { get; private set; }
+        public DailyBudgetId ParentId { get; protected set; }
+        public Amount Amount { get; protected set; }
         protected override void When(object @event)
         {
             switch(@event)

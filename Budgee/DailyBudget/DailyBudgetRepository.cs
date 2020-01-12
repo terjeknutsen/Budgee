@@ -1,4 +1,4 @@
-﻿using Budgee.Domain.DailyBudget;
+﻿using Budgee.Domain.DailyBudgets;
 using Budgee.Infrastucture;
 using System.Linq;
 using System.Threading.Tasks;
@@ -11,7 +11,7 @@ namespace Budgee.DailyBudget
 
         public DailyBudgetRepository(SQLiteDatabase database)
          =>   this.database = database;
-        public async Task Add(Domain.DailyBudget.DailyBudget entity)
+        public async Task Add(Domain.DailyBudgets.DailyBudget entity)
         {
            await database.SaveDailyBudgetAsync(entity);
         }
@@ -22,7 +22,7 @@ namespace Budgee.DailyBudget
             return budgets.Any(b => b.Id == id); 
         }
 
-        public async Task<Domain.DailyBudget.DailyBudget> Load(DailyBudgetId id)
+        public async Task<Domain.DailyBudgets.DailyBudget> Load(DailyBudgetId id)
         {
             var budgets = await database.GetDailyBudgetAsync();
             return budgets.FirstOrDefault(b => b.Id == id);
