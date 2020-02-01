@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Budgee.DailyBudgets.Messages.DailyBudgets;
+using System;
 
 namespace Budgee.Domain.DailyBudgets
 {

@@ -210,7 +210,7 @@ namespace Budgee.Tests.Domain
             => InitSUT(this, Guid.NewGuid(), new HasIncome(), new TenDayPeriodSet(), new HasOutgo());
             protected override void When()
             {
-                SUT.ChangeStart(Currentstart().AddDays(1));
+                SUT.ChangeStart(Currentstart().AddDays(1),NOW);
             }
             [Test]
             public void Then_snapshot_should_be_changed(){
@@ -224,7 +224,7 @@ namespace Budgee.Tests.Domain
             => InitSUT(this, Guid.NewGuid(), new HasIncome(), new TenDayPeriodSet(), new HasOutgo());
             protected override void When()
             {
-                SUT.ChangeEnd(Currentstart().AddDays(9));
+                SUT.ChangeEnd(Currentstart().AddDays(9),NOW);
             }
             [Test]
             public void Then_snapshot_should_be_changed()

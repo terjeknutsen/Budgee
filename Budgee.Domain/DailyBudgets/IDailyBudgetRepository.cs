@@ -7,5 +7,6 @@ namespace Budgee.Domain.DailyBudgets
         Task<DailyBudget> Load(DailyBudgetId id);
         Task Add(DailyBudget entity);
         Task<bool> Exists(DailyBudgetId id);
+        Task Update(DailyBudget entity);
     }
 }

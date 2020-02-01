@@ -17,7 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Budgee.Domain\Budgee.Domain.csproj" />
+    <ProjectReference Include="..\Budgee.Domain\Budgee.DailyBudgets.Domain.csproj" />
   </ItemGroup>
 
 </Project>

@@ -11,6 +11,7 @@ namespace Budgee.Domain.DailyBudgets
                 throw new ArgumentOutOfRangeException(nameof(amount), "Available cannot be negative");
         }
         public new static Available FromDecimal(decimal amount) => new Available(amount);
+        public static implicit operator decimal(Available self) => self.Amount;
         public static bool operator <(Available a, Available b) => a.Amount < b.Amount;
         public static bool operator >(Available a, Available b) => a.Amount > b.Amount;
     }

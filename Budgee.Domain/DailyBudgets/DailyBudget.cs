@@ -1,4 +1,5 @@
-﻿using Budgee.Framework;
+﻿using Budgee.DailyBudgets.Messages.DailyBudgets;
+using Budgee.Framework;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,7 +16,10 @@ namespace Budgee.Domain.DailyBudgets
             Incomes = new List<Income>();
             Outgos = new List<Outgo>();
             Expenditures = new List<Expenditure>();
-            Apply(new Events.DailyBudgetCreated { Id = id });
+            Apply(new Events.DailyBudgetCreated 
+            { 
+                Id = id
+            });
         }
         public void AddIncome(decimal amount, DateTime entryDate)
         { 
@@ -26,7 +30,7 @@ namespace Budgee.Domain.DailyBudgets
                     Amount = amount,
                     EntryDate = entryDate
                 });
-            Snapshot.Update(TotalIncome(), entryDate);
+            Snapshot.SetTotalIncome(TotalIncome(), entryDate);
         }
 
 
@@ -39,7 +43,7 @@ namespace Budgee.Domain.DailyBudgets
                 Amount = amount,
                 EntryDate = entryDate
             });
-            Snapshot.Update(TotalIncome(), entryDate);
+            Snapshot.SetTotalIncome(TotalIncome(), entryDate);
         }
         public void RemoveIncome(Guid incomeId, DateTime entryDate)
         {
@@ -49,7 +53,7 @@ namespace Budgee.Domain.DailyBudgets
                 IncomeId = incomeId,
                 EntryDate = entryDate
             });
-            Snapshot.Update(TotalIncome(), entryDate);
+            Snapshot.SetTotalIncome(TotalIncome(), entryDate);
         }
         public void AddOutgo(decimal amount, DateTime entryDate)
         {
@@ -60,7 +64,7 @@ namespace Budgee.Domain.DailyBudgets
                 Amount = amount,
                 EntryDate = entryDate
             });
-            Snapshot.UpdateOutgo(TotalOutgo(), entryDate);
+            Snapshot.SetTotalOutgo(TotalOutgo(), entryDate);
         }
         public void AddExpenditure(decimal amount, DateTime entryDate)
         {
@@ -71,7 +75,7 @@ namespace Budgee.Domain.DailyBudgets
                 Amount = amount,
                 EntryDate = entryDate
             });
-            Snapshot.UpdateTotalExpenditure(TotalExpenditure(), entryDate);
+            Snapshot.SetTotalExpenditures(TotalExpenditure(), entryDate);
         }
         public void ChangeOutgo(Guid id, decimal amount, DateTime entryDate)
         {
@@ -82,7 +86,7 @@ namespace Budgee.Domain.DailyBudgets
                 Amount = amount,
                 EntryDate = entryDate
             });
-            Snapshot.UpdateOutgo(TotalOutgo(), entryDate);
+            Snapshot.SetTotalOutgo(TotalOutgo(), entryDate);
         }
         public void RemoveOutgo(Guid outgoId, DateTime entryDate)
         {
@@ -92,7 +96,7 @@ namespace Budgee.Domain.DailyBudgets
                 OutgoId = outgoId,
                 EntryDate = entryDate
             });
-            Snapshot.UpdateOutgo(TotalOutgo(), entryDate);
+            Snapshot.SetTotalOutgo(TotalOutgo(), entryDate);
         }
         public void SetPeriod(DateTime start, DateTime end)
             => Apply(new Events.PeriodAddedToDailyBudget
@@ -102,16 +106,23 @@ namespace Budgee.Domain.DailyBudgets
                 Start = start,
                 End = end
             });
-        public void ChangeStart(DateTime start)
-            => Apply(new Events.PeriodStartChanged
+        public void ChangeStart(DateTime start,DateTime entryDate)
+        {
+            Apply(new Events.PeriodStartChanged
             {
                 Start = start
             });
-        public void ChangeEnd(DateTime end)
-            => Apply(new Events.PeriodEndChanged 
+            Snapshot.SetPeriod(Period, entryDate);
+        }
+        public void ChangeEnd(DateTime end,DateTime entryDate)
+        {
+            
+            Apply(new Events.PeriodEndChanged
             {
                 End = end
             });
+            Snapshot.SetPeriod(Period, entryDate);
+        }
         
     
         protected override void When(object @event)
@@ -145,7 +156,7 @@ namespace Budgee.Domain.DailyBudgets
                     if (income == null)
                         throw new InvalidOperationException($"Income with id {e.IncomeId} not found");
                     ApplyToEntity(income, e);
-                    Snapshot.Update(TotalIncome(),e.EntryDate);
+                    Snapshot.SetTotalIncome(TotalIncome(),e.EntryDate);
                     break;
                 case Events.OutgoAddedToDailyBudget e:
                     outgo = new Outgo(Apply);
@@ -172,11 +183,9 @@ namespace Budgee.Domain.DailyBudgets
                     break;
                 case Events.PeriodStartChanged e:
                     Period = Period.Create(e.Start, Period.ToB);
-                    ApplyToEntity(Snapshot, e);
                     break;
                 case Events.PeriodEndChanged e:
                     Period = Period.Create(Period.FromA, e.End);
-                    ApplyToEntity(Snapshot, e);
                     break;
                 case Events.TotalIncomeChanged e:
                     ApplyToEntity(Snapshot,e);
@@ -202,7 +211,7 @@ namespace Budgee.Domain.DailyBudgets
         public List<Income> Incomes { get; }
         public List<Outgo> Outgos{ get; }
         public List<Expenditure> Expenditures{ get; }
-        public Period Period { get; set; }
-        public Snapshot Snapshot{ get; set; }
+        public Period Period { get; private set; }
+        public Snapshot Snapshot{ get; private set; }
     }
 }

@@ -1,4 +1,5 @@
-﻿using Budgee.Framework;
+﻿using Budgee.DailyBudgets.Messages.DailyBudgets;
+using Budgee.Framework;
 using System;
 
 namespace Budgee.Domain.DailyBudgets
@@ -20,27 +21,53 @@ namespace Budgee.Domain.DailyBudgets
 
         public DailyAmount Daily { get; private set; }
 
-        internal void Update(Amount income,DateTime entryDate)
-            => Apply(new Events.TotalIncomeChanged
+        internal void SetTotalIncome(Amount income, DateTime entryDate)
+        {
+            totalIncome = income;
+            var daily = CalculateDaily();
+            var available = CalculateAvailable(entryDate, daily);
+            Apply(new Events.SnapshotChanged
             {
                 DailyBudgetId = ParentId,
-                TotalIncome = income,
+                SnapshotId = Id,
+                Daily = daily,
+                Available = available,
                 EntryDate = entryDate
             });
-        internal void UpdateOutgo(Amount outgo,DateTime entryDate)
-            => Apply(new Events.TotalOutgoChanged
-               {
-                DailyBudgetId = ParentId,
-                TotalOutgo = outgo,
-                EntryDate = entryDate
-               });
-        internal void UpdateTotalExpenditure(Amount expenditures, DateTime entryDate)
-            => Apply(new Events.TotalExpenditureChanged
+        }
+ 
+        internal void SetTotalOutgo(Amount outgo, DateTime entryDate)
+        {
+            totalOutgo = outgo;
+            var daily = CalculateDaily();
+            ApplySnapshotChanges(entryDate, daily);
+        }
+
+  
+
+        internal void SetTotalExpenditures(Amount expenditures, DateTime entryDate)
+        {
+            totalExpenditure = expenditures;
+            ApplySnapshotChanges(entryDate, Daily);
+        }
+        internal void SetPeriod(Period period, DateTime entryDate)
+        {
+            this.period = period;
+            var daily = CalculateDaily();
+            ApplySnapshotChanges(entryDate, daily);
+        }
+        private void ApplySnapshotChanges(DateTime entryDate, DailyAmount daily)
+        {
+            var available = CalculateAvailable(entryDate,daily);
+            Apply(new Events.SnapshotChanged
             {
                 DailyBudgetId = ParentId,
-                TotalExpenditure = expenditures,
+                SnapshotId = Id,
+                Daily = daily,
+                Available = available,
                 EntryDate = entryDate
             });
+        }
 
         protected override void When(object @event)
         {
@@ -51,38 +78,19 @@ namespace Budgee.Domain.DailyBudgets
                     Id = new SnapshotId(Guid.NewGuid());
                     Daily = DailyAmount.FromDecimal(0m);
                     Available = Available.FromDecimal(0m);
-
                     break;
                 case Events.PeriodAddedToDailyBudget e:
                     period = Period.Create(e.Start, e.End);
                     break;
-                case Events.TotalIncomeChanged e:
-                    totalIncome = Amount.FromDecimal(e.TotalIncome);
-                    Daily = CalculateDaily(period,totalIncome,totalOutgo);
-                    Available = CalculateAvailable(period,e.EntryDate,Daily,totalExpenditure);
+                case Events.SnapshotChanged e:
+                    Daily = DailyAmount.FromDecimal(e.Daily);
+                    Available = Available.FromDecimal(e.Available);
                     break;
-                case Events.TotalOutgoChanged e:
-                    totalOutgo = Amount.FromDecimal(e.TotalOutgo);
-                    Daily = CalculateDaily(period, totalIncome, totalOutgo);
-                    Available = CalculateAvailable(period, e.EntryDate, Daily, totalExpenditure);
-                    break;
-                case Events.PeriodStartChanged e:
-                    period = Period.Create(e.Start, period.ToB);
-                    Daily = CalculateDaily(period, totalIncome, totalOutgo);
-                    break;
-                case Events.PeriodEndChanged e:
-                    period = Period.Create(period.FromA, e.End);
-                    Daily = CalculateDaily(period, totalIncome, totalOutgo);
-                    break;
-                case Events.TotalExpenditureChanged e:
-                    totalExpenditure = Amount.FromDecimal(e.TotalExpenditure);
-                    Available = CalculateAvailable(period, e.EntryDate, Daily, totalExpenditure);
-                    break;
-                
             }
         }
 
-        private static DailyAmount CalculateDaily(Period period, Amount totalIncome, Amount totalOutgo)
+
+        private DailyAmount CalculateDaily()
         {
             if (period == null) return DailyAmount.FromDecimal(0m);
             var income = totalIncome?.Amount ?? 0m;
@@ -91,13 +99,14 @@ namespace Budgee.Domain.DailyBudgets
             
             return DailyAmount.FromDecimal(daily);
         }
-        private static Available CalculateAvailable(Period period,DateTime timeOfChange,DailyAmount dailyAmount, Amount totalExpenditure)
+        private Available CalculateAvailable(DateTime entryDate,DailyAmount dailyAmount)
         {
             if (period == null) return Available.FromDecimal(0m);
             var expenditures = totalExpenditure?.Amount ?? 0m;
-            var elapsedDays = period.ElapsedDays(timeOfChange);
+            var elapsedDays = period.ElapsedDays(entryDate);
             var available = (elapsedDays * dailyAmount) - expenditures;
-            return Available.FromDecimal(available);
+
+            return Available.FromDecimal(available >= 0m ? available : 0m);
         }
 
 
@@ -111,5 +120,6 @@ namespace Budgee.Domain.DailyBudgets
          =>   this.value = value;
         protected override bool CompareProperties(SnapshotId other)
          =>   value == other.value;
+         public static implicit operator Guid(SnapshotId self)=> self.value;
     }
 }
