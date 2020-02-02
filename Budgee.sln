@@ -11,9 +11,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Budgee.Framework", "Budgee.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Budgee.DailyBudgets", "Budgee\Budgee.DailyBudgets.csproj", "{CE5BC0FC-57F1-444F-902A-628580A62CD6}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Budgee.Web", "Budgee.Web\Budgee.Web.csproj", "{58A67DD4-DB99-4DF9-9924-21A22A7778C5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Budgee", "Budgee.Web\Budgee.csproj", "{58A67DD4-DB99-4DF9-9924-21A22A7778C5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Budgee.DailyBudgets.Messages", "Budgee.DailyBudgets.Message\Budgee.DailyBudgets.Messages.csproj", "{56457923-9326-4D60-99F8-A900F164D3DB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Budgee.DailyBudgets.Messages", "Budgee.DailyBudgets.Message\Budgee.DailyBudgets.Messages.csproj", "{56457923-9326-4D60-99F8-A900F164D3DB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

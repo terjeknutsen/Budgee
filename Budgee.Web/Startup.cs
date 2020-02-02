@@ -2,6 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Budgee.DailyBudgets;
+using Budgee.DailyBudgets.DailyBudgets;
+using Budgee.Domain.DailyBudgets;
+using Budgee.Framework;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -25,10 +29,13 @@ namespace Budgee.Web
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllers();
-            services.AddSwaggerGen(c =>
+            services.AddSingleton<IDailyBudgetRepository, InMemoryRepository>()
+                    .AddSingleton<IApplicationService, DailyBudgetApplicationService>()
+                    .AddControllers();
+                   services.AddSwaggerGen(c =>
                 c.SwaggerDoc("v1",
                     new Microsoft.OpenApi.Models.OpenApiInfo { Title = "DailyBudgets", Version = "v1" }));
+            
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -68,19 +68,19 @@ namespace Budgee.DailyBudgets
                 );
 
             var dailyBudget =
-                new Domain.DailyBudgets.DailyBudget(
+                new DailyBudget(
                     new DailyBudgetId(cmd.DailyBudgetId));
             await repository.Add(dailyBudget);
 
         }
 
-        private async Task HandleUpdate(Guid dailyBudgetId, Action<Domain.DailyBudgets.DailyBudget> operation){
+        private async Task HandleUpdate(Guid dailyBudgetId, Action<DailyBudget> operation){
             var dailyBudget = await repository.Load(dailyBudgetId.ToString());
             if (dailyBudget == null)
                 throw new InvalidOperationException(
                     $"Entity with id {dailyBudgetId} cannot be found");
             operation(dailyBudget);
-            await repository.Add(dailyBudget);
+            await repository.Update(dailyBudget);
             
         }
     }
