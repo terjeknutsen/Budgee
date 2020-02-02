@@ -30,7 +30,7 @@ namespace Budgee.Web
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddSingleton<IDailyBudgetRepository, InMemoryRepository>()
-                    .AddSingleton<IApplicationService, DailyBudgetApplicationService>()
+                    .AddSingleton<IApplicationService, DailyBudgetsCommandService>()
                     .AddControllers();
                    services.AddSwaggerGen(c =>
                 c.SwaggerDoc("v1",

@@ -6,11 +6,11 @@ using static Budgee.DailyBudgets.Messages.DailyBudgets.Commands;
 
 namespace Budgee.DailyBudgets
 {
-    public sealed class DailyBudgetApplicationService : IApplicationService
+    public sealed class DailyBudgetsCommandService : IApplicationService
     {
         private readonly IDailyBudgetRepository repository;
 
-        public DailyBudgetApplicationService(
+        public DailyBudgetsCommandService(
         IDailyBudgetRepository repository)
         {
             this.repository = repository;
