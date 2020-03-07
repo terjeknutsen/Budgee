@@ -1,24 +1,24 @@
-﻿using Budgee.Domain.DailyBudgets;
-using Budgee.Projections;
+﻿using Budgee.DailyBudgets.Messages;
 using Microsoft.AspNetCore.Mvc;
-using System.Threading.Tasks;
+using Serilog;
+using System.Collections.Generic;
+
 
 namespace Budgee.DailyBudgets.DailyBudgets
 {
-    [ApiController, Route("/snapshot")]
-    public sealed class DailyBudgetsQueryApi : ControllerBase
+    [ApiController, Route("/budget")]
+    public sealed class DailyBudgetQueryApi : ControllerBase
     {
-        private readonly IDailyBudgetRepository repository;
+        private static ILogger log = Log.ForContext<DailyBudgetQueryApi>();
+        private readonly IEnumerable<ReadModels.DailyBudgets> items;
 
-        public DailyBudgetsQueryApi(IDailyBudgetRepository repository)
+        public DailyBudgetQueryApi(IEnumerable<ReadModels.DailyBudgets> items)
         {
-            this.repository = repository;
+            this.items = items;
         }
         [HttpGet]
-        public async Task<ActionResult<ReadModels.Snapshots>> Get(
-        [FromQuery] QueryModels.GetSnapshot query)
-        {
-            return new OkObjectResult(await Queries.Query(repository, query)); 
-        }
+        public IActionResult Get(
+           [FromQuery] QueryModels.GetDailyBudget request)
+                => RequestHandler.HandleQuery(() => items.Query(request), log);
     }
 }

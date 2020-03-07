@@ -1,9 +1,5 @@
-<<<<<<< HEAD:Budgee.Domain/DailyBudgets/Outgo.cs
 ﻿using Budgee.DailyBudgets.Domain.DailyBudgets;
 using Budgee.DailyBudgets.Messages.DailyBudgets;
-=======
-﻿using Budgee.DailyBudgets.Messages.DailyBudgets;
->>>>>>> 4cfac43ef23ba3f92c02fb306d94fb193648e2be:Budgee.Domain/DailyBudgets/Outgo.cs
 using Budgee.Framework;
 using System;
 
@@ -15,10 +11,7 @@ namespace Budgee.Domain.DailyBudgets
         {}
         public DailyBudgetId ParentId { get; protected set; }
         public Amount Amount { get; protected set; }
-<<<<<<< HEAD:Budgee.Domain/DailyBudgets/Outgo.cs
         public Description Description { get; set; }
-=======
->>>>>>> 4cfac43ef23ba3f92c02fb306d94fb193648e2be:Budgee.Domain/DailyBudgets/Outgo.cs
         protected override void When(object @event)
         {
             switch(@event)
