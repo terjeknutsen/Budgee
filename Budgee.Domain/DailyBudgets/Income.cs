@@ -1,5 +1,9 @@
+<<<<<<< HEAD:Budgee.Domain/DailyBudgets/Income.cs
 ﻿using Budgee.DailyBudgets.Domain.DailyBudgets;
 using Budgee.DailyBudgets.Messages.DailyBudgets;
+=======
+﻿using Budgee.DailyBudgets.Messages.DailyBudgets;
+>>>>>>> 4cfac43ef23ba3f92c02fb306d94fb193648e2be:Budgee.Domain/DailyBudgets/Income.cs
 using Budgee.Framework;
 using System;
 

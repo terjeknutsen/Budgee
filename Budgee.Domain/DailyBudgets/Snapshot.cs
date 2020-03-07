@@ -21,7 +21,11 @@ namespace Budgee.Domain.DailyBudgets
 
         public DailyAmount Daily { get; private set; }
 
+<<<<<<< HEAD
         private void SetTotalIncome(Amount income, DateTime entryDate)
+=======
+        internal void SetTotalIncome(Amount income, DateTime entryDate)
+>>>>>>> 4cfac43ef23ba3f92c02fb306d94fb193648e2be
         {
             totalIncome = income;
             var daily = CalculateDaily();
@@ -36,7 +40,11 @@ namespace Budgee.Domain.DailyBudgets
             });
         }
  
+<<<<<<< HEAD
         private void SetTotalOutgo(Amount outgo, DateTime entryDate)
+=======
+        internal void SetTotalOutgo(Amount outgo, DateTime entryDate)
+>>>>>>> 4cfac43ef23ba3f92c02fb306d94fb193648e2be
         {
             totalOutgo = outgo;
             var daily = CalculateDaily();
@@ -45,13 +53,23 @@ namespace Budgee.Domain.DailyBudgets
 
   
 
+<<<<<<< HEAD
         private void SetTotalExpenditures(Amount expenditures, DateTime entryDate)
+=======
+        internal void SetTotalExpenditures(Amount expenditures, DateTime entryDate)
+>>>>>>> 4cfac43ef23ba3f92c02fb306d94fb193648e2be
         {
             totalExpenditure = expenditures;
             ApplySnapshotChanges(entryDate, Daily);
         }
+<<<<<<< HEAD
         private void SetPeriod(DateTime entryDate)
         {
+=======
+        internal void SetPeriod(Period period, DateTime entryDate)
+        {
+            this.period = period;
+>>>>>>> 4cfac43ef23ba3f92c02fb306d94fb193648e2be
             var daily = CalculateDaily();
             ApplySnapshotChanges(entryDate, daily);
         }
@@ -80,6 +98,7 @@ namespace Budgee.Domain.DailyBudgets
                     break;
                 case Events.PeriodAddedToDailyBudget e:
                     period = Period.Create(e.Start, e.End);
+<<<<<<< HEAD
                     SetPeriod(e.EntryDate);
                     break;
                 case Events.PeriodStartChanged e:
@@ -110,6 +129,8 @@ namespace Budgee.Domain.DailyBudgets
                     break;
                 case Events.ExpenditureAdded e:
                     SetTotalExpenditures(Amount.FromDecimal(e.TotalExpenditure), e.EntryDate);
+=======
+>>>>>>> 4cfac43ef23ba3f92c02fb306d94fb193648e2be
                     break;
                 case Events.SnapshotChanged e:
                     Daily = DailyAmount.FromDecimal(e.Daily);

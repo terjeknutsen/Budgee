@@ -7,7 +7,10 @@ namespace Budgee.Projections
         public class DailyBudgets
         {
             public Guid DailyBudgtId { get; set; }
+<<<<<<< HEAD
             public string Name { get; set; }
+=======
+>>>>>>> 4cfac43ef23ba3f92c02fb306d94fb193648e2be
             public decimal Remaining { get; set; }
             public decimal DailyAmount { get; set; }
             public DateTime Start { get; set; }

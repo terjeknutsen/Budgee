@@ -2,7 +2,11 @@
   "$schema": "http://json.schemastore.org/launchsettings.json",
   "iisSettings": {
     "windowsAuthentication": false,
+<<<<<<< HEAD
     "anonymousAuthentication": false,
+=======
+    "anonymousAuthentication": true,
+>>>>>>> 4cfac43ef23ba3f92c02fb306d94fb193648e2be
     "iisExpress": {
       "applicationUrl": "http://localhost:59737",
       "sslPort": 44365
@@ -12,7 +16,11 @@
     "IIS Express": {
       "commandName": "IISExpress",
       "launchBrowser": true,
+<<<<<<< HEAD
       "launchUrl": "swagger",
+=======
+      "launchUrl": "weatherforecast",
+>>>>>>> 4cfac43ef23ba3f92c02fb306d94fb193648e2be
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
@@ -20,7 +28,11 @@
     "Budgee.Web": {
       "commandName": "Project",
       "launchBrowser": true,
+<<<<<<< HEAD
       "launchUrl": "swagger",
+=======
+      "launchUrl": "weatherforecast",
+>>>>>>> 4cfac43ef23ba3f92c02fb306d94fb193648e2be
       "applicationUrl": "https://localhost:5001;http://localhost:5000",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
