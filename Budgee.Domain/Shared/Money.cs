@@ -24,6 +24,7 @@ namespace Budgee.Domain.Shared
          }
         public static Money operator +(Money summand1, Money summand2) => summand1.Add(summand2);
         public static Money operator -(Money minuend, Money subtrahend) => minuend.Subtract(subtrahend);
+ 
         protected override bool CompareProperties(Money other)
         {
             return Amount.Equals(other.Amount);

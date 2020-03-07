@@ -1,0 +1,27 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Remove="DailyBudgets\SnapshotQueryApi.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.2.5" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="3.1.1" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
+    <PackageReference Include="NSwag.ApiDescription.Client" Version="13.0.5" />
+    <PackageReference Include="Serilog" Version="2.9.0" />
+    <PackageReference Include="Serilog.Sinks.Console" Version="3.1.1" />
+    <PackageReference Include="sqlite-net-pcl" Version="1.6.292" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Budgee.DailyBudgets.Message\Budgee.DailyBudgets.Messages.csproj" />
+    <ProjectReference Include="..\Budgee.Domain\Budgee.DailyBudgets.Domain.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Projections\" />
+  </ItemGroup>
+  <ItemGroup>
+    <OpenApiReference Include=".\OpenAPI.json" />
+  </ItemGroup>
+</Project>
