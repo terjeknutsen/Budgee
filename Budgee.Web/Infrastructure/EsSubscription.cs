@@ -40,7 +40,101 @@ namespace Budgee.Infrastructure
                     {
                         DailyBudgtId = e.Id,
                         Name = e.Name,
-                        Snapshot = new ReadModels.Snapshots { DailyBudgetId = e.Id }
+                        Snapshot = new ReadModels.Snapshots { DailyBudgetId = e.Id },
+                        Expenditures = new List<ReadModels.Expenditures>(),
+                        Incomes = new List<ReadModels.Incomes>(),
+                        Outgos = new List<ReadModels.Outgos>()
+                    });
+                    break;
+                case Events.IncomeAddedToDailyBudget e:
+                    UpdateItem(e.DailyBudgetId, budget =>
+                        {
+                            budget.Incomes.Add(new ReadModels.Incomes { DailyBudgetId = e.DailyBudgetId, IncomeId = e.IncomeId, Amount = e.Amount, Description = e.Description });
+                        });
+                    break;
+                case Events.OutgoAddedToDailyBudget e:
+                    UpdateItem(e.DailyBudgetId, budget =>
+                        {
+                            budget.Outgos.Add(new ReadModels.Outgos { DailyBudgetId = e.DailyBudgetId, OutgoId = e.OutgoId, Amount = e.Amount, Description = e.Description });
+
+                        });
+                    break;
+                case Events.ExpenditureAdded e:
+                    UpdateItem(e.DailyBudgetId, budget =>
+                       {
+                           budget.Expenditures.Add(new ReadModels.Expenditures { DailyBudgetId = e.DailyBudgetId, ExpenditureId = e.ExpenditureId, Amount = e.Amount, Description = e.Description });
+                       });
+                    break;
+                case Events.IncomeAmountChanged e:
+                    UpdateItem(e.DailyBudgetId, budget =>
+                    {
+                        var income = budget.Incomes.FirstOrDefault(i => i.IncomeId == e.IncomeId);
+                        if(income!=null)
+                        {
+                            budget.Incomes.Remove(income);
+                            income.Amount = e.Amount;
+                            budget.Incomes.Add(income);
+                        }
+                    });
+                    break;
+                case Events.IncomeDescriptionChanged e:
+                    UpdateItem(e.DailyBudgetId, budget =>
+                    {
+                        var income = budget.Incomes.FirstOrDefault(i => i.IncomeId == e.IncomeId);
+                        if(income!=null)
+                        {
+                            budget.Incomes.Remove(income);
+                            income.Description = e.Description;
+                            budget.Incomes.Add(income);
+                        }
+                    });
+                    break;
+                case Events.OutgoAmountChanged e:
+                    UpdateItem(e.DailyBudgetId, budget =>
+                    {
+                        var outgo = budget.Outgos.FirstOrDefault(i => i.OutgoId == e.OutgoId);
+                        if (outgo != null)
+                        {
+                            budget.Outgos.Remove(outgo);
+                            outgo.Amount = e.Amount;
+                            budget.Outgos.Add(outgo);
+                        }
+                    });
+                    break;
+                case Events.OutgoDescriptionChanged e:
+                    UpdateItem(e.DailyBudgetId, budget =>
+                    {
+                        var outgo = budget.Outgos.FirstOrDefault(i => i.OutgoId == e.OutgoId);
+                        if (outgo != null)
+                        {
+                            budget.Outgos.Remove(outgo);
+                            outgo.Description = e.Description;
+                            budget.Outgos.Add(outgo);
+                        }
+                    });
+                    break;
+                case Events.ExpenditureAmountChanged e:
+                    UpdateItem(e.DailyBudgetId, budget =>
+                    {
+                        var outgo = budget.Expenditures.FirstOrDefault(i => i.ExpenditureId == e.ExpenditureId);
+                        if (outgo != null)
+                        {
+                            budget.Expenditures.Remove(outgo);
+                            outgo.Amount = e.Amount;
+                            budget.Expenditures.Add(outgo);
+                        }
+                    });
+                    break;
+                case Events.ExpenditureDescriptionChanged e:
+                    UpdateItem(e.DailyBudgetId, budget =>
+                    {
+                        var outgo = budget.Expenditures.FirstOrDefault(i => i.ExpenditureId == e.ExpenditureId);
+                        if (outgo != null)
+                        {
+                            budget.Expenditures.Remove(outgo);
+                            outgo.Description = e.Description;
+                            budget.Expenditures.Add(outgo);
+                        }
                     });
                     break;
                 case Events.SnapshotChanged e:

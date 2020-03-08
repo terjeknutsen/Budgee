@@ -38,6 +38,14 @@ namespace Budgee.Domain.DailyBudgets
                 Amount = amount,
                 EntryDate = entryDate
             });
+        public void ChangeIncome(Guid incomeId, string description, DateTime entryDate)
+            => Apply(new Events.IncomeDescriptionChanged
+            {
+                DailyBudgetId = Id,
+                IncomeId = incomeId,
+                Description = description,
+                EntryDate = entryDate
+            });
       
         public void RemoveIncome(Guid incomeId, DateTime entryDate)
          =>   Apply(new Events.IncomeRemoved
@@ -55,32 +63,63 @@ namespace Budgee.Domain.DailyBudgets
                 EntryDate = entryDate,
                 Description = description
             });
-         
-        public void AddExpenditure(decimal amount, DateTime entryDate)
+        public void ChangeOutgo(Guid id, decimal amount, DateTime entryDate)
+            => Apply(new Events.OutgoAmountChanged
+            {
+               DailyBudgetId = Id,
+               OutgoId = id,
+               Amount = amount,
+               EntryDate = entryDate
+            });
+        public void ChangeOutgo(Guid id, string description, DateTime entryDate)
+            => Apply(new Events.OutgoDescriptionChanged
+            {
+                DailyBudgetId = Id,
+                OutgoId = id,
+                Description = description,
+                EntryDate = entryDate
+            });
+        public void RemoveOutgo(Guid outgoId, DateTime entryDate)
+            => Apply(new Events.OutgoRemoved
+            {
+             DailyBudgetId = Id,
+             OutgoId = outgoId,
+             EntryDate = entryDate
+            });
+
+        public void AddExpenditure(decimal amount,string description, DateTime entryDate)
          =>   Apply(new Events.ExpenditureAdded
             {
                 DailyBudgetId = Id,
                 ExpenditureId = Guid.NewGuid(),
                 Amount = amount,
+                Description = description,
                 EntryDate = entryDate
             });
-            
-        public void ChangeOutgo(Guid id, decimal amount, DateTime entryDate)
-         =>   Apply(new Events.OutgoAmountChanged
+
+        public void ChangeExpenditure(Guid id, decimal amount, DateTime entryDate)
+            => Apply(new Events.ExpenditureAmountChanged
             {
                 DailyBudgetId = Id,
-                OutgoId = id,
+                ExpenditureId = id,
                 Amount = amount,
                 EntryDate = entryDate
             });
-        public void RemoveOutgo(Guid outgoId, DateTime entryDate)
-         =>   Apply(new Events.OutgoRemoved
+        public void ChangeExpenditure(Guid id, string description, DateTime entryDate)
+            => Apply(new Events.ExpenditureDescriptionChanged
             {
                 DailyBudgetId = Id,
-                OutgoId = outgoId,
+                ExpenditureId = id,
+                Description = description,
                 EntryDate = entryDate
             });
-        
+        public void RemoveExpenditure(Guid id, DateTime entryDate)
+            => Apply(new Events.ExpenditureRemoved
+            {
+                DailyBudgetId = Id,
+                ExpenditureId = id,
+                EntryDate = entryDate
+            });
         public void SetPeriod(DateTime start, DateTime end)
          =>   Apply(new Events.PeriodAddedToDailyBudget
             {
@@ -130,19 +169,25 @@ namespace Budgee.Domain.DailyBudgets
                     e.TotalIncome = TotalIncome();
                     ApplyToEntity(Snapshot, e);
                     break;
-                case Events.IncomeRemoved e:
-                    income = Incomes.FirstOrDefault(i => i.Id == e.IncomeId);
-                    if (income == null)
-                        throw new InvalidOperationException($"Income with id {e.IncomeId} not found");
-                    Incomes.Remove(income);
-                    e.TotalIncome = TotalIncome();
-                    ApplyToEntity(Snapshot, e);
-                    break;
                 case Events.IncomeAmountChanged e:
                     income = Incomes.FirstOrDefault(i => i.Id == e.IncomeId);
                     if (income == null)
                         throw new InvalidOperationException($"Income with id {e.IncomeId} not found");
                     ApplyToEntity(income, e);
+                    e.TotalIncome = TotalIncome();
+                    ApplyToEntity(Snapshot, e);
+                    break;
+                case Events.IncomeDescriptionChanged e:
+                    income = Incomes.FirstOrDefault(i => i.Id == e.IncomeId);
+                    if (income == null)
+                        throw new InvalidOperationException($"Income with id {e.IncomeId} not found");
+                    ApplyToEntity(income, e);
+                    break;
+                case Events.IncomeRemoved e:
+                    income = Incomes.FirstOrDefault(i => i.Id == e.IncomeId);
+                    if (income == null)
+                        throw new InvalidOperationException($"Income with id {e.IncomeId} not found");
+                    Incomes.Remove(income);
                     e.TotalIncome = TotalIncome();
                     ApplyToEntity(Snapshot, e);
                     break;
@@ -153,6 +198,20 @@ namespace Budgee.Domain.DailyBudgets
                     e.TotalOutgo = TotalOutgo();
                     ApplyToEntity(Snapshot, e);
                     break;
+                case Events.OutgoAmountChanged e:
+                    outgo = Outgos.FirstOrDefault(i => i.Id == e.OutgoId);
+                    if (outgo == null)
+                        throw new InvalidOperationException($"Outgo with id {e.OutgoId} not found");
+                    ApplyToEntity(outgo, e);
+                    e.TotalOutgo = TotalOutgo();
+                    ApplyToEntity(Snapshot, e);
+                    break;
+                case Events.OutgoDescriptionChanged e:
+                    outgo = Outgos.FirstOrDefault(i => i.Id == e.OutgoId);
+                    if (outgo == null)
+                        throw new InvalidOperationException($"Outgo with id {e.OutgoId} not found");
+                    ApplyToEntity(outgo, e);
+                    break;
                 case Events.OutgoRemoved e:
                     outgo = Outgos.FirstOrDefault(o => o.Id == e.OutgoId);
                     if (outgo == null)
@@ -161,12 +220,19 @@ namespace Budgee.Domain.DailyBudgets
                     e.TotalOutgo = TotalOutgo();
                     ApplyToEntity(Snapshot, e);
                     break;
-                case Events.OutgoAmountChanged e:
-                    outgo = Outgos.FirstOrDefault(i => i.Id == e.OutgoId);
-                    if (outgo == null)
-                        throw new InvalidOperationException($"Outgo with id {e.OutgoId} not found");
-                    ApplyToEntity(outgo, e);
-                    e.TotalOutgo = TotalOutgo();
+                case Events.ExpenditureAdded e:
+                    expenditure = new Expenditure(Apply);
+                    ApplyToEntity(expenditure, e);
+                    Expenditures.Add(expenditure);
+                    e.TotalExpenditure = TotalExpenditure();
+                    ApplyToEntity(Snapshot, e);
+                    break;
+                case Events.ExpenditureAmountChanged e:
+                    expenditure = Expenditures.FirstOrDefault(exp => exp.Id == e.ExpenditureId);
+                    if (expenditure == null)
+                        throw new InvalidOperationException($"Expenditure with id {e.ExpenditureId} not found");
+                    ApplyToEntity(expenditure, e);
+                    e.TotalExpenditure = TotalExpenditure();
                     ApplyToEntity(Snapshot, e);
                     break;
                 case Events.PeriodAddedToDailyBudget e:
@@ -183,13 +249,7 @@ namespace Budgee.Domain.DailyBudgets
                     Period = Period.Create(Period.FromA, e.End);
                     ApplyToEntity(Snapshot, e);
                     break;
-                case Events.ExpenditureAdded e:
-                    expenditure = new Expenditure(Apply);
-                    ApplyToEntity(expenditure, e);
-                    Expenditures.Add(expenditure);
-                    e.TotalExpenditure = TotalExpenditure();
-                    ApplyToEntity(Snapshot, e);
-                    break;
+       
             }   
         }
         protected override void EnsureValidState()

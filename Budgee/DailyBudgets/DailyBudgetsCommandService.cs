@@ -28,18 +28,38 @@ namespace Budgee.DailyBudgets
                     HandleUpdate(
                         cmd.DailyBudgetId,
                         b => b.AddOutgo(cmd.Amount, cmd.Description, DateTime.Now)),
+                V1.AddExpenditure cmd => 
+                    HandleUpdate(
+                        cmd.DailyBudgetId,
+                        b=> b.AddExpenditure(cmd.Amount,cmd.Description,DateTime.Now)),
                 V1.SetPeriod cmd =>
                     HandleUpdate(
                         cmd.DailyBudgetId,
                         b => b.SetPeriod(cmd.Start, cmd.End)),
-                V1.ChangeIncome cmd =>
+                V1.ChangeIncomeAmount cmd =>
                     HandleUpdate(
                         cmd.DailyBudgetId,
                         b => b.ChangeIncome(cmd.IncomeId, cmd.Amount, DateTime.Now)),
-                V1.ChangeOutgo cmd =>
+                V1.ChangeOutgoAmount cmd =>
                     HandleUpdate(
                         cmd.DailyBudgetId,
                         b => b.ChangeOutgo(cmd.OutgoId, cmd.Amount, DateTime.Now)),
+                V1.ChangeExpenditureAmount cmd => 
+                    HandleUpdate(
+                        cmd.DailyBudgetId,
+                        b => b.ChangeExpenditure(cmd.ExpenditureId, cmd.Amount,DateTime.Now)),
+                V1.ChangeIncomeDescription cmd =>
+                    HandleUpdate(
+                        cmd.DailyBudgetId,
+                        b => b.ChangeIncome(cmd.IncomeId,cmd.Description,DateTime.Now)),
+                V1.ChangeOutgoDescription cmd=>
+                    HandleUpdate(
+                        cmd.DailyBudgetId,
+                        b => b.ChangeOutgo(cmd.OutgoId, cmd.Description,DateTime.Now)),
+                V1.ChangeExpenditureDescription cmd => 
+                    HandleUpdate(
+                        cmd.DailyBudgetId,
+                        b => b.ChangeExpenditure(cmd.ExpenditureId,cmd.Description,DateTime.Now)),
                 V1.ChangeStart cmd =>
                     HandleUpdate(
                         cmd.DailyBudgetId,
@@ -56,6 +76,10 @@ namespace Budgee.DailyBudgets
                     HandleUpdate(
                         cmd.DailyBudgetId,
                         b => b.RemoveOutgo(cmd.OutgoId, DateTime.Now)),
+                V1.RemoveExpenditure cmd => 
+                    HandleUpdate(
+                        cmd.DailyBudgetId,
+                        b => b.RemoveExpenditure(cmd.ExpenditureId, DateTime.Now)),
                 _ => Task.CompletedTask
 
             };

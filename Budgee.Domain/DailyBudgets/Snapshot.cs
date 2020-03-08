@@ -111,6 +111,9 @@ namespace Budgee.Domain.DailyBudgets
                 case Events.ExpenditureAdded e:
                     SetTotalExpenditures(Amount.FromDecimal(e.TotalExpenditure), e.EntryDate);
                     break;
+                case Events.ExpenditureAmountChanged e:
+                    SetTotalExpenditures(Amount.FromDecimal(e.TotalExpenditure), e.EntryDate);
+                    break;
                 case Events.SnapshotChanged e:
                     Daily = DailyAmount.FromDecimal(e.Daily);
                     Available = Available.FromDecimal(e.Available);

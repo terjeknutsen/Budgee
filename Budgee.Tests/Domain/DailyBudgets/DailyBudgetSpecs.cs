@@ -1,12 +1,5 @@
-<<<<<<< HEAD
-﻿using NUnit.Framework;
-using Should;
-=======
-﻿using SpecsFor;
 using NUnit.Framework;
 using Should;
-using Moq;
->>>>>>> 4cfac43ef23ba3f92c02fb306d94fb193648e2be
 using SpecsFor.StructureMap;
 using System;
 using SpecsFor.Core;
@@ -19,11 +12,8 @@ namespace Budgee.Tests.Domain
     {
         static void InitSUT(SpecsFor<DailyBudget> state, Guid budgetId, params IContext<DailyBudget>[] contexts)
         {
-<<<<<<< HEAD
+
              state.SUT = new DailyBudget(new DailyBudgetId(budgetId), new BudgetName("budgetName"));
-=======
-             state.SUT = new DailyBudget(new DailyBudgetId(budgetId));
->>>>>>> 4cfac43ef23ba3f92c02fb306d94fb193648e2be
             foreach (var context in contexts)
                 context.Initialize(state);
         }
@@ -49,13 +39,10 @@ namespace Budgee.Tests.Domain
             public void Then_available_amount_should_equal_zero(){
                 SUT.Snapshot.Available.ShouldEqual(Available.FromDecimal(0m));
             }
-<<<<<<< HEAD
             [Test]
             public void Then_budget_name_should_be_set(){
                 SUT.Name.ShouldEqual(new BudgetName("budgetName"));
             }
-=======
->>>>>>> 4cfac43ef23ba3f92c02fb306d94fb193648e2be
         }
         public class When_add_income : SpecsFor<DailyBudget>
         {
@@ -63,11 +50,7 @@ namespace Budgee.Tests.Domain
                 => InitSUT(this, Guid.NewGuid());
             protected override void When()
             {
-<<<<<<< HEAD
                 SUT.AddIncome(100m,"description", NOW);
-=======
-                SUT.AddIncome(100m, NOW);
->>>>>>> 4cfac43ef23ba3f92c02fb306d94fb193648e2be
             }
             [Test]
             public void Then_income_should_be_added(){
@@ -81,11 +64,7 @@ namespace Budgee.Tests.Domain
             
             protected override void When()
             {
-<<<<<<< HEAD
                 SUT.AddIncome(100m, "description", NOW);
-=======
-                SUT.AddIncome(100m, NOW);
->>>>>>> 4cfac43ef23ba3f92c02fb306d94fb193648e2be
             }
             [Test]
             public void Then_daily_amount_should_be_set(){
@@ -103,11 +82,7 @@ namespace Budgee.Tests.Domain
             
             protected override void When()
             {
-<<<<<<< HEAD
                 SUT.AddIncome(100m,"description", NOW);
-=======
-                SUT.AddIncome(100m, NOW);
->>>>>>> 4cfac43ef23ba3f92c02fb306d94fb193648e2be
             }
             [Test]
             public void Then_income_should_be_added(){
@@ -150,11 +125,7 @@ namespace Budgee.Tests.Domain
                 => InitSUT(this, Guid.NewGuid());
             protected override void When()
             {
-<<<<<<< HEAD
                 SUT.AddOutgo(100m,"description", NOW);
-=======
-                SUT.AddOutgo(100m, NOW);
->>>>>>> 4cfac43ef23ba3f92c02fb306d94fb193648e2be
             }
             [Test]
             public void Then_outgo_should_be_added(){
@@ -265,22 +236,6 @@ namespace Budgee.Tests.Domain
             }
         }
 
-        public class When_add_expenditure_less_than_available : SpecsFor<DailyBudget>
-        {
-            protected override void InitializeClassUnderTest()
-                => InitSUT(this, Guid.NewGuid(), new HasIncome(), new TenDayPeriodSet(), new HasOutgo());
-            protected override void When()
-            {
-                SUT.AddExpenditure(12m, NOW.AddDays(5));
-            }
-            [Test]
-            public void Then_available_should_be_correct(){
-                var expected = (3m * 6) - 12m;
-                SUT.Snapshot.Available.ShouldEqual(Available.FromDecimal(expected));
-            }
-        }
-
-<<<<<<< HEAD
         public class When_set_period_given_income_already_set : SpecsFor<DailyBudget>
         {
             protected override void InitializeClassUnderTest()
@@ -297,17 +252,11 @@ namespace Budgee.Tests.Domain
         }
         
 
-=======
->>>>>>> 4cfac43ef23ba3f92c02fb306d94fb193648e2be
         class HasIncome : IContext<DailyBudget>
         {
             public void Initialize(ISpecs<DailyBudget> state)
             {
-<<<<<<< HEAD
                 state.SUT.AddIncome(100m,"description",NOW);
-=======
-                state.SUT.AddIncome(100m,NOW);
->>>>>>> 4cfac43ef23ba3f92c02fb306d94fb193648e2be
             }
         }
 
@@ -315,11 +264,7 @@ namespace Budgee.Tests.Domain
         {
             public void Initialize(ISpecs<DailyBudget> state)
             {
-<<<<<<< HEAD
                 state.SUT.AddOutgo(70m,"description",NOW);
-=======
-                state.SUT.AddOutgo(70m,NOW);
->>>>>>> 4cfac43ef23ba3f92c02fb306d94fb193648e2be
             }
         }
         static DateTime NOW = new DateTime(2020,1,1,12,0,0);

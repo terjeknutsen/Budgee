@@ -19,10 +19,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Budgee.Domain\Budgee.DailyBudgets.Domain.csproj" />
-<<<<<<< HEAD
     <ProjectReference Include="..\Budgee.Web\Budgee.csproj" />
-=======
->>>>>>> 4cfac43ef23ba3f92c02fb306d94fb193648e2be
   </ItemGroup>
 
 </Project>

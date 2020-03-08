@@ -45,9 +45,15 @@ namespace Budgee.Web
             var subscription = new EsSubscription(esConnection, dailybudgetItems);
             services.AddSingleton<IHostedService>(new EventStoreService(esConnection, subscription));
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
-            services.AddSwaggerGen(c =>
-                c.SwaggerDoc("v1",
-                    new Microsoft.OpenApi.Models.OpenApiInfo { Title = "DailyBudgets", Version = "v1" }));
+            services.AddOpenApiDocument(settings => 
+            {
+                settings.Title = "Budgee";
+                settings.DocumentName = "v1";
+                settings.Version = "v1";
+            });
+            //services.AddSwaggerGen(c =>
+            //    c.SwaggerDoc("v1",
+            //        new Microsoft.OpenApi.Models.OpenApiInfo { Title = "DailyBudgets", Version = "v1" }));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -67,8 +73,10 @@ namespace Budgee.Web
             {
                 endpoints.MapControllers();
             });
-            app.UseSwagger();
-            app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "DailyBudgets v1"));
+            app.UseOpenApi()
+            .UseSwaggerUi3();
+            //app.UseSwagger();
+            //app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "DailyBudgets v1"));
         }
     }
 }

@@ -16,6 +16,12 @@ namespace Budgee.Domain.DailyBudgets
                     Id = new OutgoId(e.ExpenditureId);
                     Amount = Amount.FromDecimal(e.Amount);
                     break;
+                case Events.ExpenditureAmountChanged e:
+                    Amount = Amount.FromDecimal(e.Amount);
+                    break;
+                case Events.ExpenditureDescriptionChanged e:
+                    Description = e.Description;
+                    break;
             }
         }
     }

@@ -25,6 +25,9 @@ namespace Budgee.Domain.DailyBudgets
                 case Events.OutgoAmountChanged e:
                     Amount = Amount.FromDecimal(e.Amount);
                     break;
+                case Events.OutgoDescriptionChanged e:
+                    Description = new Description(e.Description);
+                    break;
             }
         }
     }

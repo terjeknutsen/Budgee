@@ -18,7 +18,7 @@ namespace Budgee.DailyBudgets
 
         [HttpPost]
         public async Task<IActionResult> Post(V1.Create request)
-        { 
+        {
             await applicationService.Handle(request);
             return Ok();
         }
@@ -43,16 +43,52 @@ namespace Budgee.DailyBudgets
             await applicationService.Handle(request);
             return Ok();
         }
-        [Route("change/income")]
-        [HttpPut]
-        public async Task<IActionResult> Put(V1.ChangeIncome request)
+        [Route("expenditure")]
+        [HttpPost]
+        public async Task<IActionResult> Post(V1.AddExpenditure request)
         {
             await applicationService.Handle(request);
             return Ok();
         }
-        [Route("change/outgo")]
+        [Route("change/income/amount")]
         [HttpPut]
-        public async Task<IActionResult> Put(V1.ChangeOutgo request)
+        public async Task<IActionResult> Put(V1.ChangeIncomeAmount request)
+        {
+            await applicationService.Handle(request);
+            return Ok();
+        }
+        [Route("change/income/description")]
+        [HttpPut]
+        public async Task<IActionResult> Put(V1.ChangeIncomeDescription request)
+        {
+            await applicationService.Handle(request);
+            return Ok();
+        }
+
+        [Route("change/outgo/amount")]
+        [HttpPut]
+        public async Task<IActionResult> Put(V1.ChangeOutgoAmount request)
+        {
+            await applicationService.Handle(request);
+            return Ok();
+        }
+        [Route("change/outgo/description")]
+        [HttpPut]
+        public async Task<IActionResult> Put(V1.ChangeOutgoDescription request)
+        {
+            await applicationService.Handle(request);
+            return Ok();
+        }
+        [Route("change/expenditure/amount")]
+        [HttpPut]
+        public async Task<IActionResult> Put(V1.ChangeExpenditureAmount request)
+        {
+            await applicationService.Handle(request);
+            return Ok();
+        }
+        [Route("change/expenditure/description")]
+        [HttpPut]
+        public async Task<IActionResult> Put(V1.ChangeExpenditureDescription request)
         {
             await applicationService.Handle(request);
             return Ok();

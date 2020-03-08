@@ -21,13 +21,19 @@ namespace Budgee.DailyBudgets.Messages.DailyBudgets
                 public Guid DailyBudgetId { get; set; }
                 public Guid IncomeId { get; set; }
                 public decimal Amount { get; set; }
-                public string Description{ get; set; }
+                public string Description { get; set; }
             }
-            public class ChangeIncome
+            public class ChangeIncomeAmount
             {
                 public Guid DailyBudgetId { get; set; }
                 public Guid IncomeId { get; set; }
                 public decimal Amount { get; set; }
+            }
+            public class ChangeIncomeDescription
+            {
+                public Guid DailyBudgetId { get; set; }
+                public Guid IncomeId { get; set; }
+                public string Description { get; set; }
             }
             public class RemoveIncome
             {
@@ -39,18 +45,45 @@ namespace Budgee.DailyBudgets.Messages.DailyBudgets
                 public Guid DailyBudgetId { get; set; }
                 public Guid OutgoId { get; set; }
                 public decimal Amount { get; set; }
-                public string Description{ get; set; }
+                public string Description { get; set; }
             }
-            public class ChangeOutgo
+            public class ChangeOutgoAmount
             {
                 public Guid DailyBudgetId { get; set; }
                 public Guid OutgoId { get; set; }
                 public decimal Amount { get; set; }
             }
+            public class ChangeOutgoDescription{
+                public Guid DailyBudgetId { get; set; }
+                public Guid OutgoId { get; set; }
+                public string Description { get; set; }
+            }
             public class RemoveOuto
             {
                 public Guid DailyBudgetId { get; set; }
                 public Guid OutgoId { get; set; }
+            }
+            public class AddExpenditure {
+                public Guid DailyBudgetId { get; set; }
+                public Guid ExpenditureId { get; set; }
+                public string Description { get; set; }
+                public decimal Amount { get; set; }
+            }
+            public class ChangeExpenditureAmount {
+                public Guid DailyBudgetId { get; set; }
+                public Guid ExpenditureId { get; set; }
+                public decimal Amount { get; set; }
+            }
+            public class ChangeExpenditureDescription 
+            { 
+                public Guid DailyBudgetId { get; set; }
+                public Guid ExpenditureId { get; set; }
+                public string Description { get; set; }
+            }
+            public class RemoveExpenditure
+            {
+                public Guid DailyBudgetId { get; set; }
+                public Guid ExpenditureId { get; set; }
             }
             public class SetPeriod
             {
@@ -69,6 +102,7 @@ namespace Budgee.DailyBudgets.Messages.DailyBudgets
                 public DateTime End { get; set; }
             }
 
+           
         }
     }
 }
