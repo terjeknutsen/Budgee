@@ -12,11 +12,11 @@ namespace Budgee.DailyBudgets.Messages
             public DateTime Start { get; set; }
             public DateTime End { get; set; }
             public Snapshots Snapshot { get; set; }
-            public IList<Expenditures> Expenditures { get; set; } = new List<Expenditures>();
+            public IList<Spendings> Spendings { get; set; } = new List<Spendings>();
             public IList<Incomes> Incomes { get; set; } = new List<Incomes>();
             public IList<Outgos> Outgos { get; set; } = new List<Outgos>();
             public IList<KeyNumber> KeyNumbers { get; set; } = new List<KeyNumber>();
-            public decimal TotalExpenditure { get; set; }
+            public decimal TotalSpendings { get; set; }
         }
         public class Snapshots
         {
@@ -25,12 +25,13 @@ namespace Budgee.DailyBudgets.Messages
             public decimal Daily { get; set; }
             public decimal Available { get; set; }
         }
-        public class Expenditures
+        public class Spendings
         {
             public Guid DailyBudgetId { get; set; }
-            public Guid ExpenditureId { get; set; }
+            public Guid SpendingId { get; set; }
             public decimal Amount { get; set; }
             public string Description { get; set; }
+            public DateTime Entry { get; set; }
         }
         public class Incomes
         {
@@ -38,6 +39,7 @@ namespace Budgee.DailyBudgets.Messages
             public Guid IncomeId { get; set; }
             public decimal Amount { get; set; }
             public string Description { get; set; }
+            public DateTime Entry { get; set; }
         }
         public class Outgos
         {
@@ -45,6 +47,7 @@ namespace Budgee.DailyBudgets.Messages
             public Guid OutgoId { get; set; }
             public decimal Amount { get; set; }
             public string Description { get; set; }
+            public DateTime Entry { get; set; }
         }
         public class KeyNumber
         {

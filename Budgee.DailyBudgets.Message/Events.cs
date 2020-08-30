@@ -27,11 +27,13 @@ namespace Budgee.DailyBudgets.Messages.DailyBudgets
             public decimal Amount { get; set; }
             public string Description { get; set; }
         }
-        public class IncomeAmountChanged : Event
+        public class IncomeChanged : Event
         {
             public Guid DailyBudgetId { get; set; }
             public Guid IncomeId { get; set; }
             public decimal Amount { get; set; }
+            public string Description { get; set; }
+            public int Type { get; set; }
         }
         public class IncomeRemoved : Event
         {
@@ -53,12 +55,13 @@ namespace Budgee.DailyBudgets.Messages.DailyBudgets
             public decimal Amount { get; set; }
             public string Description { get; set; }
         }
-        public class OutgoAmountChanged : Event
+        public class OutgoChanged : Event
         {
             public decimal Daily { get; set; }
             public Guid DailyBudgetId { get; set; }
             public Guid OutgoId { get; set; }
             public decimal Amount { get; set; }
+            public string Description { get; set; }
         }
 
         public class OutgoRemoved : Event
@@ -98,6 +101,13 @@ namespace Budgee.DailyBudgets.Messages.DailyBudgets
             public decimal Amount { get; set; }
             public string Description { get; set; }
         }
+        public class SpendingUpdated
+        {
+            public Guid DailyBudgetId { get; set; }
+            public Guid SpendingId { get; set; }
+            public decimal Amount { get; set; }
+            public string Description { get; set; }
+        }
         public class SnapshotChanged : Event
         {
             public Guid DailyBudgetId { get; set; }
@@ -107,7 +117,12 @@ namespace Budgee.DailyBudgets.Messages.DailyBudgets
         public class KeyNumberChanged : Event
         {
             public Guid DailyBudgetId { get; set; }
-            public (string, float)[] KeyNumbers { get; set; }
+            public KeyNumber[] KeyNumbers { get; set; }
+        }
+        public class KeyNumber
+        {
+            public string Name { get; set; }
+            public float Percent { get; set; }
         }
 
 

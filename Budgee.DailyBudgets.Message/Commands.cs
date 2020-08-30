@@ -30,11 +30,13 @@ namespace Budgee.DailyBudgets.Messages.DailyBudgets
                 public decimal Amount { get; set; }
                 public string Description { get; set; }
             }
-            public class ChangeIncomeAmount
+            public class ChangeIncome
             {
                 public Guid DailyBudgetId { get; set; }
                 public Guid IncomeId { get; set; }
                 public decimal Amount { get; set; }
+                public string Description { get; set; }
+                public string Type { get; set; }
             }
             public class ChangeIncomeDescription
             {
@@ -61,11 +63,12 @@ namespace Budgee.DailyBudgets.Messages.DailyBudgets
                 public decimal Amount { get; set; }
                 public string Description { get; set; }
             }
-            public class ChangeOutgoAmount
+            public class ChangeOutgo
             {
                 public Guid DailyBudgetId { get; set; }
                 public Guid OutgoId { get; set; }
                 public decimal Amount { get; set; }
+                public string Description { get; set; }
             }
             public class ChangeOutgoDescription
             {
@@ -78,30 +81,32 @@ namespace Budgee.DailyBudgets.Messages.DailyBudgets
                 public Guid DailyBudgetId { get; set; }
                 public Guid OutgoId { get; set; }
             }
-            public class AddExpenditure
+            public class AddMustHave
             {
                 public Guid DailyBudgetId { get; set; }
-                public Guid ExpenditureId { get; set; }
+                public Guid SpendingId { get; set; }
                 public string Description { get; set; }
                 public decimal Amount { get; set; }
-                public int Kind { get; set; }
             }
-            public class ChangeExpenditureAmount
+
+            public class AddNiceToHave
             {
                 public Guid DailyBudgetId { get; set; }
-                public Guid ExpenditureId { get; set; }
+                public Guid SpendingId { get; set; }
+                public string Description { get; set; }
                 public decimal Amount { get; set; }
             }
-            public class ChangeExpenditureDescription
+            public class ChangeSpending
             {
                 public Guid DailyBudgetId { get; set; }
-                public Guid ExpenditureId { get; set; }
+                public Guid SpendingId { get; set; }
+                public decimal Amount { get; set; }
                 public string Description { get; set; }
             }
-            public class RemoveExpenditure
+            public class RemoveSpending
             {
                 public Guid DailyBudgetId { get; set; }
-                public Guid ExpenditureId { get; set; }
+                public Guid SpendingId { get; set; }
             }
             public class SetPeriod
             {
