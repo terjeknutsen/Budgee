@@ -16,20 +16,21 @@ namespace Budgee.DailyBudgets.Messages
             public IList<Incomes> Incomes { get; set; } = new List<Incomes>();
             public IList<Outgos> Outgos { get; set; } = new List<Outgos>();
             public IList<KeyNumber> KeyNumbers { get; set; } = new List<KeyNumber>();
-            public decimal TotalSpendings { get; set; }
+            public double TotalSpendings { get; set; }
         }
         public class Snapshots
         {
             public Guid DailyBudgetId { get; set; }
             public Guid SnapshotId { get; set; }
-            public decimal Daily { get; set; }
-            public decimal Available { get; set; }
+            public double Daily { get; set; }
+            public double Available { get; set; }
+            public double LiveAvailable { get; set; }
         }
         public class Spendings
         {
             public Guid DailyBudgetId { get; set; }
             public Guid SpendingId { get; set; }
-            public decimal Amount { get; set; }
+            public double Amount { get; set; }
             public string Description { get; set; }
             public DateTime Entry { get; set; }
         }
@@ -37,7 +38,7 @@ namespace Budgee.DailyBudgets.Messages
         {
             public Guid DailyBudgetId { get; set; }
             public Guid IncomeId { get; set; }
-            public decimal Amount { get; set; }
+            public double Amount { get; set; }
             public string Description { get; set; }
             public DateTime Entry { get; set; }
         }
@@ -45,7 +46,7 @@ namespace Budgee.DailyBudgets.Messages
         {
             public Guid DailyBudgetId { get; set; }
             public Guid OutgoId { get; set; }
-            public decimal Amount { get; set; }
+            public double Amount { get; set; }
             public string Description { get; set; }
             public DateTime Entry { get; set; }
         }
